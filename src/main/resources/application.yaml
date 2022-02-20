@@ -1,5 +1,3 @@
 bot:
-  name: DaniilCryptoCoinBot
-  token: 5280474401:AAGXoACgaEzUReIaYVOfG6Slwuep2rvyq38
-#  name: ${BOT_NAME}
-#  token: ${BOT_TOKEN}
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
