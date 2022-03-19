@@ -27,5 +27,14 @@ public class GeckoCoinService {
                 + "Капитализация: " + coins[0].getMarket_cap() + " usd" + "\n"
                 ;
     }
+
+    public String getCoinPriceAndRating(String nameCoin) {
+        ResponseEntity<Id[]> coin = this.restTemplate.getForEntity(
+                "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=" + nameCoin, Id[].class);
+        Id[] coins = coin.getBody();
+        return coins[0].getName() + " (" + coins[0].getSymbol() + ")"
+                + " = " + coins[0].getCurrent_price() + " usd"
+                ;
+    }
 }
 
