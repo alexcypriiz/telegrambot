@@ -15,7 +15,8 @@ public enum Stickers {
     JAM_CUNNING(new InputFile(new File("StickerFiles/СunningSticker.tgs"))),
     JAM_SADLY(new InputFile(new File("StickerFiles/SadlySticker.tgs"))),
     JAM_RIOTOUS(new InputFile(new File("StickerFiles/RiotousSticker.tgs"))),
-    ;
+    JAM_WINK(new InputFile(new File("StickerFiles/WinkSticker.tgs"))),
+    JAM_HAPPY(new InputFile(new File("StickerFiles/HappySticker.tgs")));
 
     InputFile stickerId;
 

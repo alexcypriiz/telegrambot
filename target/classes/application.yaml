@@ -1,5 +1,20 @@
 bot:
-  name: DaniilCryptoCoinBot
-  token: 5280474401:AAGXoACgaEzUReIaYVOfG6Slwuep2rvyq38
-#  name: ${BOT_NAME}
-#  token: ${BOT_TOKEN}
+  name: ${BOT_NAME}
+  token: ${BOT_TOKEN}
+
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      console.settings.trace: false
+      spring.h2.console.settings.web-allow-others: false
+  datasource:
+    url: jdbc:h2:file:./data/telegram
+    username: sa
+    password:
+    driverClassName: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
