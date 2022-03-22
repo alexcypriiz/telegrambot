@@ -3,6 +3,7 @@ package com.cryptocoin.telegram.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Alexey Podlubnyy on 19.02.2022

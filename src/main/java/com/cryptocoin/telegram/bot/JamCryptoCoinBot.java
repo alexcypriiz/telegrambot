@@ -13,12 +13,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -141,7 +143,7 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                                         + "\n-Под статистикой найденной монеты выведена кнопка для добавления монеты в избранное;\n"
                                         + "\n-Чтобы убрать избранную монету, нужно повторно отправить в чат название монеты. Нажмите кнопку под выведенной статистикой монеты;\n"
                                         + "\n-В меню имеется кнопка для вывода избранных. При ее нажатии Вам будут отправлены Ваши избранные монеты;\n"
-                                        + "\n-В меню имеется кнопка для рассылкиизбранных монет. При ее нажатии будет включена рассылка избранных монет каждый час;\n"
+                                        + "\n-В меню имеется кнопка для рассылки избранных монет. При ее нажатии будет включена рассылка избранных монет каждый час;\n"
                                         + "\n-Для отключения рассылки, нажмите на кнопку в меню;\n"
                                         + "\nВопросы или предложения по улучшению: https://t.me/alexcypriiz, Алексей")
                                 .chatId(message.getChatId().toString())
@@ -150,8 +152,7 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                 }
             }
         } else if (message.getText().equals(TOP_COIN)) {
-            List<Coin> list = topCoinService.findByChatId(message.getChatId());
-            if (list.isEmpty()) {
+            if (topCoinService.findByChatId(message.getChatId()) == null) {
                 execute(Stickers.JAM_WINK.getSendSticker(message.getChatId().toString()));
                 execute(SendMessage.builder().text("Пусто.. Я не нашел монеты в избранном. Может добавим?)" +
                                 "\nСНОСКА: Пропишите название монеты в чат, если монета была найдена, то нажмите кнопку под текстом")
@@ -159,7 +160,7 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                         .build());
 
             } else {
-                String allTopCoin = list.stream().map(s -> s.getCoin()).collect(Collectors.joining("\n"));
+                String allTopCoin = topCoinService.findByChatId(message.getChatId()).stream().map(s -> s.getCoin()).collect(Collectors.joining("\n"));
                 execute(SendMessage.builder().text(allTopCoin)
                         .chatId(message.getChatId().toString())
                         .build());
@@ -181,36 +182,42 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                     .replyMarkup(mainButtonsMenu.getMainMenuTopAndEnableRepeat())
                     .build());
         } else {
-            execute(Stickers.JAM_CUNNING.getSendSticker(message.getChatId().toString()));
-
-            execute(SendMessage.builder().text("Хммм, а вот это интересненько. Сейчас поищем..")
-                    .chatId(message.getChatId().toString())
-                    .build());
             try {
-                String coinOutPut = geckoCoinService.getCoin(message.getText().toLowerCase(Locale.ROOT));
+                execute(Stickers.JAM_CUNNING.getSendSticker(message.getChatId().toString()));
 
-                if (topCoinService.findByUserIdAndChatIdAndCoin(message.getChatId(), message.getText().toLowerCase(Locale.ROOT)) == null) {
-                    List<List<InlineKeyboardButton>> buttonAddCoin = new ArrayList<>();
-                    buttonAddCoin.add(Arrays.asList(InlineKeyboardButton.builder().text("Добавить монету в избранное").callbackData("Хорошо, монетка отложена").build()));
-                    execute(SendMessage.builder().text(coinOutPut)
-                            .chatId(message.getChatId().toString())
-                            .replyMarkup(InlineKeyboardMarkup.builder().keyboard(buttonAddCoin).build())
-                            .build());
-                } else {
-                    List<List<InlineKeyboardButton>> buttonDeleteCoin = new ArrayList<>();
-                    buttonDeleteCoin.add(Arrays.asList(InlineKeyboardButton.builder().text("Убрать монету из избранного").callbackData("Сделано, я забуду про нее").build()));
-                    execute(SendMessage.builder().text(coinOutPut)
-                            .chatId(message.getChatId().toString())
-                            .replyMarkup(InlineKeyboardMarkup.builder().keyboard(buttonDeleteCoin).build())
-                            .build());
-                }
-
-            } catch (ArrayIndexOutOfBoundsException e) {
-                execute(Stickers.JAM_SADLY.getSendSticker(message.getChatId().toString()));
-
-                execute(SendMessage.builder().text("Такой монеты нету( Перепроверь название и введи, пожалуйста, еще раз.")
+                execute(SendMessage.builder().text("Хммм, а вот это интересненько. Сейчас поищем..")
                         .chatId(message.getChatId().toString())
                         .build());
+                try {
+                    String coinOutPut = geckoCoinService.getCoin(message.getText().toLowerCase(Locale.ROOT));
+
+                    if (topCoinService.findByUserIdAndChatIdAndCoin(message.getChatId(), message.getText().toLowerCase(Locale.ROOT)) == null) {
+                        List<List<InlineKeyboardButton>> buttonAddCoin = new ArrayList<>();
+                        buttonAddCoin.add(Arrays.asList(InlineKeyboardButton.builder().text("Добавить монету в избранное").callbackData("Хорошо, монетка отложена").build()));
+                        execute(SendMessage.builder().text(coinOutPut)
+                                .chatId(message.getChatId().toString())
+                                .replyMarkup(InlineKeyboardMarkup.builder().keyboard(buttonAddCoin).build())
+                                .build());
+                    } else {
+                        List<List<InlineKeyboardButton>> buttonDeleteCoin = new ArrayList<>();
+                        buttonDeleteCoin.add(Arrays.asList(InlineKeyboardButton.builder().text("Убрать монету из избранного").callbackData("Сделано, я забуду про нее").build()));
+                        execute(SendMessage.builder().text(coinOutPut)
+                                .chatId(message.getChatId().toString())
+                                .replyMarkup(InlineKeyboardMarkup.builder().keyboard(buttonDeleteCoin).build())
+                                .build());
+                    }
+
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    execute(Stickers.JAM_SADLY.getSendSticker(message.getChatId().toString()));
+
+                    execute(SendMessage.builder().text("Такой монеты нету( Перепроверь название и введи, пожалуйста, еще раз.")
+                            .chatId(message.getChatId().toString())
+                            .build());
+                }
+            }
+            catch (TelegramApiRequestException e) {
+                System.out.println("Группа: " + message.getChatId() + ", от \"" + message.getFrom().getFirstName()+ " " + message.getFrom().getLastName() + " " + message.getFrom().getUserName() + "\" не обработано сообщение, бот вышел из беседы");
+                execute(LeaveChat.builder().chatId(message.getChatId().toString()).build());
             }
         }
     }
@@ -227,8 +234,8 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
     }
 
     @SneakyThrows
-    @Scheduled(cron = "0 * * * * ?") // тестовая строка
-//    @Scheduled(cron = "* 0 * * * ?")
+//    @Scheduled(cron = "0 * * * * ?") // тестовая строка
+    @Scheduled(cron = "0 0 * * * ?")
     public void startSendMessage() {
         for (Coin coin : topCoinService.findCoinBy()) {
             if (userService.findRepeatStatusIdByChatId(coin.getChatId())) {
