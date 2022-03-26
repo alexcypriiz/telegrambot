@@ -6,4 +6,4 @@ build:
 	docker build -t bot .
 
 run:
-	docker run -ti -v ${PWD}/../telegramdb/:/opt/data bot bash
+	docker run -ti -v ${PWD}/../telegramdb/:/opt/data bot
