@@ -109,6 +109,15 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                 switch (command) {
                     case "/start":
                         if (userService.findUserByChatId(message.getChatId()) == null) {
+                            //отвравка об регистрации новых пользователей разработчику бота
+                            execute(SendMessage.builder().text("Новый пользователь:\nNickname: " + message.getFrom().getUserName()
+                                            + "\nLast name: " + message.getFrom().getLastName()
+                                            + "\nFirst name: " + message.getFrom().getFirstName()
+                                            + "\nUser id: " + message.getFrom().getId()
+                                            + "\nChat id: " + message.getChatId())
+                                    .chatId("229847206")
+                                    .build());
+
                             userService.saveUser(new TelegramUser(message.getChatId(), message.getFrom().getFirstName(), message.getFrom().getLastName(), message.getFrom().getUserName(), false));
 
                             execute(Stickers.JAM_HELLO.getSendSticker(message.getChatId().toString()));
@@ -128,6 +137,14 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                                     .chatId(message.getChatId().toString())
                                     .build());
                         } else {
+                            execute(SendMessage.builder().text("Пользователь перезапустил бота:\nNickname: " + message.getFrom().getUserName()
+                                            + "\nLast name: " + message.getFrom().getLastName()
+                                            + "\nFirst name: " + message.getFrom().getFirstName()
+                                            + "\nUser id: " + message.getFrom().getId()
+                                            + "\nChat id: " + message.getChatId())
+                                    .chatId("229847206")
+                                    .build());
+
                             execute(Stickers.JAM_HAPPY.getSendSticker(message.getChatId().toString()));
                             execute(SendMessage.builder().text("Ураа! С возвращением!) Продолжим искать монету? Напиши ее название полностью в английской расскладке.")
                                     .replyMarkup(mainButtonsMenu.getMainMenuTopAndEnableRepeat())
