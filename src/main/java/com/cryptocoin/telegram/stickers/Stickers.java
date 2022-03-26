@@ -9,14 +9,14 @@ import java.io.File;
  * Created by Alexey Podlubnyy on 19.02.2022
  */
 public enum Stickers {
-    JAM_HELLO(new InputFile(new File("StickerFiles/HelloSticker.tgs"))),
-    JAM_SLEEP(new InputFile(new File("StickerFiles/SleepSticker.tgs"))),
-    JAM_SPY(new InputFile(new File("StickerFiles/SpySticker.tgs"))),
-    JAM_CUNNING(new InputFile(new File("StickerFiles/СunningSticker.tgs"))),
-    JAM_SADLY(new InputFile(new File("StickerFiles/SadlySticker.tgs"))),
-    JAM_RIOTOUS(new InputFile(new File("StickerFiles/RiotousSticker.tgs"))),
-    JAM_WINK(new InputFile(new File("StickerFiles/WinkSticker.tgs"))),
-    JAM_HAPPY(new InputFile(new File("StickerFiles/HappySticker.tgs")));
+    JAM_HELLO(new InputFile(new File("/opt/HelloSticker.tgs"))),
+    JAM_SLEEP(new InputFile(new File("/opt/SleepSticker.tgs"))),
+    JAM_SPY(new InputFile(new File("/opt/SpySticker.tgs"))),
+    JAM_CUNNING(new InputFile(new File("/opt/СunningSticker.tgs"))),
+    JAM_SADLY(new InputFile(new File("/opt/SadlySticker.tgs"))),
+    JAM_RIOTOUS(new InputFile(new File("/opt/RiotousSticker.tgs"))),
+    JAM_WINK(new InputFile(new File("/opt/WinkSticker.tgs"))),
+    JAM_HAPPY(new InputFile(new File("/opt/HappySticker.tgs")));
 
     InputFile stickerId;
 
