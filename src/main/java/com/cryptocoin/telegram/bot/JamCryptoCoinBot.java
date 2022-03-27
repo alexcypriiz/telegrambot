@@ -2,9 +2,9 @@ package com.cryptocoin.telegram.bot;
 
 import com.cryptocoin.telegram.model.Coin;
 import com.cryptocoin.telegram.model.TelegramUser;
+import com.cryptocoin.telegram.service.CoinService;
 import com.cryptocoin.telegram.service.GeckoCoinService;
 import com.cryptocoin.telegram.service.MainButtonsMenu;
-import com.cryptocoin.telegram.service.CoinService;
 import com.cryptocoin.telegram.service.UserService;
 import com.cryptocoin.telegram.stickers.Stickers;
 import lombok.SneakyThrows;
@@ -16,7 +16,10 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.groupadministration.LeaveChat;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
-import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.MessageEntity;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -169,19 +172,20 @@ public class JamCryptoCoinBot extends TelegramLongPollingBot {
                 }
             }
         } else if (message.getText().equals(TOP_COIN)) {
-            if (topCoinService.findByChatId(message.getChatId()) == null) {
-                execute(Stickers.JAM_WINK.getSendSticker(message.getChatId().toString()));
-                execute(SendMessage.builder().text("Пусто.. Я не нашел монеты в избранном. Может добавим?)" +
-                                "\nСНОСКА: Пропишите название монеты в чат, если монета была найдена, то нажмите кнопку под текстом")
-                        .chatId(message.getChatId().toString())
-                        .build());
-
-            } else {
+            try {
                 String allTopCoin = topCoinService.findByChatId(message.getChatId()).stream().map(s -> s.getCoin()).collect(Collectors.joining("\n"));
                 execute(SendMessage.builder().text(allTopCoin)
                         .chatId(message.getChatId().toString())
                         .build());
             }
+            catch (TelegramApiException e) {
+                execute(Stickers.JAM_WINK.getSendSticker(message.getChatId().toString()));
+                execute(SendMessage.builder().text("Пусто.. Я не нашел монеты в избранном. Может добавим?)" +
+                                "\nСНОСКА: Пропишите название монеты в чат, если монета была найдена, то нажмите кнопку под текстом")
+                        .chatId(message.getChatId().toString())
+                        .build());
+            }
+            
         } else if (message.getText().equals(ENABLE_REPEAT_STATUS)) {
             userService.setFixedRepeatStatusFor(true, message.getChatId());
 
