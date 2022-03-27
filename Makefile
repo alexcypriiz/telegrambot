@@ -14,4 +14,4 @@ endif
 				  ${PWD}/src/main/resources/application.yaml
 
 run:
-	docker run -ti -v ${PWD}/../telegramdb/:/opt/data bot
+	docker run -d -p 8080:8080 -ti  -v ${PWD}/../telegramdb/:/opt/data bot
