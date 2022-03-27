@@ -1,4 +1,4 @@
-ARCH := $(uname -m)
+ARCH := $(shell uname -m)
 
 prebuild:
 	ansible-vault decrypt --vault-password-file ${PWD}/../passkey \
